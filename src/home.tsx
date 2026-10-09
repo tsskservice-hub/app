@@ -16,6 +16,7 @@ import {
   Lock,
   Gamepad2
 } from 'lucide-react';
+import { Header } from "./components/header"; // ⬅️ （必要に応じてパスを調整してください。共通Headerを使用する場合）
 
 export default function AppHub() {
   const [activeTab, setActiveTab] = useState('all');
@@ -203,7 +204,7 @@ export default function AppHub() {
         <div className="flex items-center space-x-2 overflow-x-auto pb-4 mb-6 scrollbar-none">
           <button
             onClick={() => setActiveTab('all')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all shadow-xs ${
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
               activeTab === 'all'
                 ? 'bg-indigo-600 text-white shadow-indigo-200'
                 : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
@@ -213,7 +214,7 @@ export default function AppHub() {
           </button>
           <button
             onClick={() => setActiveTab('vce')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all shadow-xs ${
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
               activeTab === 'vce'
                 ? 'bg-indigo-600 text-white shadow-indigo-200'
                 : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
@@ -223,7 +224,7 @@ export default function AppHub() {
           </button>
           <button
             onClick={() => setActiveTab('junior')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all shadow-xs ${
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
               activeTab === 'junior'
                 ? 'bg-indigo-600 text-white shadow-indigo-200'
                 : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
@@ -233,7 +234,7 @@ export default function AppHub() {
           </button>
           <button
             onClick={() => setActiveTab('adult')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all shadow-xs ${
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
               activeTab === 'adult'
                 ? 'bg-indigo-600 text-white shadow-indigo-200'
                 : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
@@ -243,7 +244,7 @@ export default function AppHub() {
           </button>
           <button
             onClick={() => setActiveTab('tools')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all shadow-xs ${
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all shadow-xs cursor-pointer ${
               activeTab === 'tools'
                 ? 'bg-indigo-600 text-white shadow-indigo-200'
                 : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
@@ -258,13 +259,9 @@ export default function AppHub() {
           {filteredFeatures.map((feature) => {
             const isComingSoon = feature.status === 'coming-soon';
 
-            return (
-              <div 
-                key={feature.id}
-                className={`bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm transition-all duration-200 flex flex-col justify-between relative group ${
-                  isComingSoon ? 'opacity-75 bg-slate-50/50' : 'hover:shadow-lg hover:border-indigo-300 hover:-translate-y-1'
-                }`}
-              >
+            // 利用可能な場合はカード全体を <Link> でラップする
+            const cardContent = (
+              <div className="h-full flex flex-col justify-between">
                 <div>
                   {/* カード上部：アイコン & バッジ */}
                   <div className="flex items-center justify-between mb-4">
@@ -293,7 +290,7 @@ export default function AppHub() {
                   </p>
                 </div>
 
-                {/* カード下部：アクションボタン */}
+                {/* カード下部：ターゲット & アクション */}
                 <div>
                   <div className="flex items-center justify-between pt-4 border-t border-slate-100 text-xs text-slate-500 mb-3">
                     <span>Target: <strong className="text-slate-700">{feature.target}</strong></span>
@@ -304,16 +301,30 @@ export default function AppHub() {
                       Coming Soon
                     </div>
                   ) : (
-                    <Link
-                      to={feature.link}
-                      className="w-full py-2.5 px-4 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center space-x-2 transition-all shadow-2xs no-underline"
-                    >
+                    <div className="w-full py-2.5 px-4 bg-indigo-50 group-hover:bg-indigo-600 text-indigo-700 group-hover:text-white rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center space-x-2 transition-all shadow-2xs">
                       <span>Get Started</span>
                       <ChevronRight className="w-4 h-4" />
-                    </Link>
+                    </div>
                   )}
                 </div>
               </div>
+            );
+
+            return isComingSoon ? (
+              <div 
+                key={feature.id}
+                className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm opacity-75 bg-slate-50/50 flex flex-col justify-between relative"
+              >
+                {cardContent}
+              </div>
+            ) : (
+              <Link 
+                key={feature.id}
+                to={feature.link}
+                className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm transition-all duration-200 flex flex-col justify-between relative group hover:shadow-lg hover:border-indigo-300 hover:-translate-y-1 no-underline"
+              >
+                {cardContent}
+              </Link>
             );
           })}
         </div>
