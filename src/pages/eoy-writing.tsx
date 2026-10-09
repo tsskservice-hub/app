@@ -183,13 +183,10 @@ function HighlightChecker() {
 }
 
 export default function Dashboard() {
-  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [activeTextType, setActiveTextType] = useState<string>("all");
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [userNickname, setUserNickname] = useState<string>("Tomonari");
-  const [isSavingNickname, setIsSavingNickname] = useState<boolean>(false);
   const [selectedQuestion, setSelectedQuestion] = useState<any>(null);
   const [showScrollTop, setShowScrollTop] = useState<boolean>(false);
   
@@ -301,7 +298,7 @@ export default function Dashboard() {
           pace: tutorLevel,          
           visualPrompt,
           assignedQuestion: assignedQuestionText,
-          userNickname: userNickname || "Student",
+          userNickname: "Student",
           imageBase64: imageBase64
         }),
       });
@@ -329,22 +326,6 @@ export default function Dashboard() {
     };
   }, []);
 
-  const handleSaveNickname = async () => {
-    setIsSavingNickname(true);
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      alert("Preferred name saved successfully! ✨");
-    } catch (error: any) {
-      console.error("Error saving nickname:", error);
-    } finally {
-      setIsSavingNickname(false);
-    }
-  };
-
-  const handleLogout = () => {
-    navigate("/");
-  };
-
   const filteredQuestions = questions.filter((q) => {
     const matchesCategory =
       activeCategory === "all" || q.category === activeCategory;
@@ -365,39 +346,6 @@ export default function Dashboard() {
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8 font-sans bg-white min-h-screen text-slate-800 relative">
-      
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white px-5 py-4 rounded-xl mb-6 border border-slate-200 shadow-sm gap-4">
-        <div className="flex flex-col gap-2 w-full sm:w-auto">
-          <div className="flex items-center gap-2 flex-wrap mt-1">
-            <label htmlFor="nickname" className="text-sm font-bold text-indigo-900">
-              🏷️ AI Preferred Name:
-            </label>
-            <input
-              id="nickname"
-              type="text"
-              value={userNickname}
-              onChange={(e) => setUserNickname(e.target.value)}
-              placeholder="e.g. Taro"
-              className="px-3 py-1.5 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
-            />
-            <button
-              onClick={handleSaveNickname}
-              disabled={isSavingNickname}
-              className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-md transition-colors cursor-pointer disabled:opacity-50"
-            >
-              {isSavingNickname ? "Saving..." : "Save Name"}
-            </button>
-          </div>
-        </div>
-
-        <button
-          onClick={handleLogout}
-          className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg cursor-pointer font-bold text-base transition-colors shadow-sm self-end sm:self-center"
-        >
-          Logout 🚪
-        </button>
-      </div>
-
       <div className="mb-6 p-6 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm">
         <h2 className="text-xl font-bold text-slate-800 m-0 mb-4 flex items-center gap-2">
           <span>📌</span> Useful Resources & Help Centre
@@ -424,10 +372,7 @@ export default function Dashboard() {
       <div>
         <div className="mb-6 p-5 bg-indigo-50 border border-indigo-200 rounded-xl shadow-sm space-y-4">
           <div className="flex items-center gap-2 text-indigo-900 font-bold text-lg flex-wrap">
-            <span>🤖</span> AI Yamato is ready for:{" "}
-            <span className="font-bold text-indigo-800 underline">
-              {userNickname}
-            </span>
+            <span>🤖</span> AI Yamato is ready for you
           </div>
 
           <div id="active-ai-tutor-banner" className="px-4 py-3 bg-white/80 border border-indigo-200 rounded-lg text-indigo-900 text-base font-bold flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-xs scroll-mt-6 gap-3">
