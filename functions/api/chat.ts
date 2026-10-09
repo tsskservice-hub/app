@@ -1,9 +1,11 @@
 /**
  * @file chat.ts
- * @description Cloudflare Pages Functions用チャットエンドポイント（時間・天気コンテキスト統合版）
+ * @description Cloudflare Pages Functions用チャットエンドポイント（system-prompt, context, 時間・天気統合版）
  */
 
-import { buildSystemInstructionWithTimeAndWeather } from '../../src/ai/time-utils.ts';
+import { buildSystemPrompt } from '../../src/ai/system-prompt.js';
+import { buildSystemInstructionWithTimeAndWeather } from '../../src/ai/time-utils.js';
+// 必要に応じて context.ts 内のユーティリティ関数などもインポート可能です
 
 export async function onRequestPost(context: any) {
   try {
@@ -12,10 +14,27 @@ export async function onRequestPost(context: any) {
       message: string;
       chatHistory?: Array<{ role: string; content: string }>;
       learningPace?: string;
+      userNickname?: string;
+      practiceMode?: string;
+      sec1Topic?: string;
+      turnCount?: string | number;
+      currentTurn?: string | number;
+      isFinalTurn?: boolean;
       visualPrompt?: string;
     };
 
-    const { message, chatHistory = [], learningPace = "steady", visualPrompt } = body;
+    const { 
+      message, 
+      chatHistory = [], 
+      learningPace = "normal", 
+      userNickname = "生徒さん",
+      practiceMode = "section 1",
+      sec1Topic = "all",
+      turnCount = "6",
+      currentTurn = 1,
+      isFinalTurn = false,
+      visualPrompt 
+    } = body;
     
     // Cloudflareの環境変数から設定値を取得
     const projectId = env?.VERTEX_AI_PROJECT_ID;
@@ -54,16 +73,22 @@ export async function onRequestPost(context: any) {
       );
     }
 
-    // 3. VCE日本語教師としてのベースプロンプトの作成
-    const baseSystemPrompt = `You are Japanese Tutor AI Yamato, an expert VCE Japanese high school educator in Victoria, Australia. 
-Your student's learning pace is set to "${learningPace}". 
-Provide encouraging, clear, and pedagogically sound guidance aligned with VCE Japanese standards.`;
+    // 3. system-prompt.ts の buildSystemPrompt を使ってメタデータ入りのベースプロンプトを構築
+    const baseSystemPrompt = buildSystemPrompt({
+      learningPace,
+      userNickname,
+      practiceMode,
+      sec1Topic,
+      turnCount,
+      currentTurn,
+      isFinalTurn
+    });
 
-    // 💡 4. 時間と天気のコンテキストを組み込んだシステムプロンプトを非同期で生成
+    // 4. time-utils.ts を使って時間と天気のコンテキストをシステムプロンプトに非同期で結合
     const enhancedSystemPromptText = await buildSystemInstructionWithTimeAndWeather(
       baseSystemPrompt,
-      undefined, // デバッグ用の日時上書きが必要な場合はここに文字列を指定
-      'melbourne' // 基準とする都市（必要に応じて変更可能）
+      undefined, // デバッグ用の日時上書き
+      'melbourne' // 基準都市
     );
 
     const systemInstruction = {
