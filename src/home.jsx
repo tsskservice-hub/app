@@ -13,13 +13,14 @@ import {
   User, 
   Coins, 
   ChevronRight, 
-  Lock
+  Lock,
+  Gamepad2
 } from 'lucide-react';
 
 export default function AppHub() {
   const [activeTab, setActiveTab] = useState('all');
 
-  // 機能カードのデータ定義（Genkoyoshi Editorのリンクを '/editor' に設定）
+  // 機能カードのデータ定義（ミニ5路 囲碁のカードを追加）
   const features = [
     {
       id: 'genkou',
@@ -30,6 +31,18 @@ export default function AppHub() {
       description: 'Vertical and horizontal Japanese manuscript layout editor for character counting and drafting compositions.',
       icon: <FileText className="w-6 h-6 text-emerald-600" />,
       link: '/editor',
+      status: 'available',
+      target: 'All Users'
+    },
+    {
+      id: 'game-igo',
+      title: 'ミニ5路 囲碁',
+      category: 'junior',
+      badge: 'Mini Game',
+      badgeColor: 'bg-amber-100 text-amber-800',
+      description: 'オンラインで手軽に遊べるミニ囲碁ゲーム。楽しみながら日本語学習ポータルの息抜きに最適です。',
+      icon: <Gamepad2 className="w-6 h-6 text-amber-600" />,
+      link: '/game-igo',
       status: 'available',
       target: 'All Users'
     },
@@ -216,7 +229,7 @@ export default function AppHub() {
                 : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
             }`}
           >
-            📚 Years 7–10 (Coming Soon)
+            📚 Years 7–10 & Games
           </button>
           <button
             onClick={() => setActiveTab('adult')}
