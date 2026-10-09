@@ -29,7 +29,7 @@ export default function AppHub() {
       badgeColor: 'bg-emerald-100 text-emerald-800',
       description: 'Vertical and horizontal Japanese manuscript layout editor for character counting and drafting compositions.',
       icon: <FileText className="w-6 h-6 text-emerald-600" />,
-      link: '/editor',
+      link: '/genkoyoshi-editor',
       status: 'available',
       target: 'All Users'
     },
