@@ -6,7 +6,7 @@ import Home from './home.jsx';
 // 各ページコンポーネントのインポート
 import OralExamQuestions from './pages/oral-exam-questions';
 import GenkoyoshiEditor from './pages/genkoyoshi-editor';
-import GamesIgo from './pages/games.igo';
+import GamesIgo from './pages/game-igo';
 import Prices from './pages/prices';
 import EoyOralDrill from './pages/eoy-oral-drill';
 import EoyOralElaborate from './pages/eoy-oral-elaborate';
