@@ -29,7 +29,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/editor" element={<GenkoyoshiEditor />} />
 
         {/* 囲碁ミニゲームページ */}
-        <Route path="/games/igo" element={<GamesIgo />} />
+        <Route path="/game-igo" element={<GamesIgo />} />
 
         {/* 料金・プランページ */}
         <Route path="/prices" element={<Prices />} />
