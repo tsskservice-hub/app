@@ -67,7 +67,7 @@ Provide encouraging, clear, and pedagogically sound guidance aligned with VCE Ja
     });
 
     // 4. Vertex AI エンドポイント呼び出し
-    const modelId = "gemini-1.5-flash";
+    const modelId = "gemini-2.5-flash";
     const vertexUrl = `https://${region}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${region}/publishers/google/models/${modelId}:generateContent`;
 
     const vertexResponse = await fetch(vertexUrl, {
