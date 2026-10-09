@@ -13,15 +13,13 @@ import {
   User, 
   Coins, 
   ChevronRight, 
-  Lock,
-  Layers,
-  GraduationCap
+  Lock
 } from 'lucide-react';
 
 export default function AppHub() {
   const [activeTab, setActiveTab] = useState('all');
 
-  // 機能カードのデータ定義（Oral Exam Audio Bank のリンクを '/oral-exam' に修正）
+  // 機能カードのデータ定義（Genkoyoshi Editorのリンクを '/editor' に設定）
   const features = [
     {
       id: 'genkou',
@@ -43,7 +41,7 @@ export default function AppHub() {
       badgeColor: 'bg-indigo-100 text-indigo-800',
       description: 'Practice audio bank featuring predicted VCE Oral Exam questions and native model answer recordings.',
       icon: <Headphones className="w-6 h-6 text-indigo-600" />,
-      link: '/oral-exam', // 🚀 Oral Exam Audio 用のページパスに修正
+      link: '/oral-exam',
       status: 'available',
       target: 'VCE Students'
     },
@@ -128,7 +126,7 @@ export default function AppHub() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans">
-      
+       
       {/* ─── ヘッダー ─── */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -170,7 +168,7 @@ export default function AppHub() {
 
       {/* ─── メインコンテンツ ─── */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        
+         
         {/* ヒーローセクション */}
         <div className="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 rounded-2xl p-6 sm:p-10 text-white shadow-xl mb-8 relative overflow-hidden">
           <div className="absolute right-0 top-0 translate-x-10 -translate-y-10 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
