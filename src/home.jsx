@@ -20,103 +20,103 @@ import {
 export default function AppHub() {
   const [activeTab, setActiveTab] = useState('all');
 
-  // 機能カードのデータ定義
+  // 機能カードのデータ定義（英語化対応版）
   const features = [
     {
       id: 'genkou',
-      title: '原稿用紙エディター',
+      title: 'Genkoyoshi Editor',
       category: 'tools',
-      badge: 'ツール',
+      badge: 'Tool',
       badgeColor: 'bg-emerald-100 text-emerald-800',
-      description: '日本語の縦書き・横書き原稿用紙レイアウトで、文字数カウントや添削用の文章作成を行えます。',
+      description: 'Vertical and horizontal Japanese manuscript layout editor for character counting and drafting compositions.',
       icon: <FileText className="w-6 h-6 text-emerald-600" />,
       link: '/editor',
       status: 'available',
-      target: '全対象'
+      target: 'All Users'
     },
     {
       id: 'vce-audio',
-      title: '口頭試験予想質問音源集',
+      title: 'Oral Exam Audio Bank',
       category: 'vce',
       badge: 'VCE Year 12',
       badgeColor: 'bg-indigo-100 text-indigo-800',
-      description: 'VCE口頭試験（Oral Exam）の傾向に合わせた予想質問と、ネイティブ音声による模範解答リスニング音源集。',
+      description: 'Practice audio bank featuring predicted VCE Oral Exam questions and native model answer recordings.',
       icon: <Headphones className="w-6 h-6 text-indigo-600" />,
       link: '/vce/audio-bank',
       status: 'available',
-      target: 'VCE受験生'
+      target: 'VCE Students'
     },
     {
       id: 'vce-drill',
-      title: '口頭試験ドリル練習',
+      title: 'Oral Exam Quick Drill',
       category: 'vce',
       badge: 'VCE Year 12',
       badgeColor: 'bg-indigo-100 text-indigo-800',
-      description: 'Section 1・Section 2に向けたクイック応答ドリル。反射神経を鍛え、自然な受け答えをマスター。',
+      description: 'Section 1 & 2 quick-response drills to sharpen reflexes and master natural conversational flow.',
       icon: <Mic className="w-6 h-6 text-indigo-600" />,
       link: '/vce/drill',
       status: 'available',
-      target: 'VCE受験生'
+      target: 'VCE Students'
     },
     {
       id: 'vce-elaborate',
-      title: '口頭試験 Elaborate 練習',
+      title: 'Oral Exam Elaborate Practice',
       category: 'vce',
       badge: 'VCE Year 12',
       badgeColor: 'bg-indigo-100 text-indigo-800',
-      description: '詳細な説明や意見の深掘り（Elaboration）を求められる質問に対し、論理的に話すトレーニング。',
+      description: 'Training module focused on structuring logical, deep responses and elaborating on detailed study topics.',
       icon: <MessageSquare className="w-6 h-6 text-indigo-600" />,
       link: '/vce/elaborate',
       status: 'available',
-      target: 'VCE受験生'
+      target: 'VCE Students'
     },
     {
       id: 'vce-mock',
-      title: 'Mock Oral シミュレーター',
+      title: 'Mock Oral Simulator',
       category: 'vce',
       badge: 'VCE Year 12',
       badgeColor: 'bg-indigo-100 text-indigo-800',
-      description: 'AI音声対話エンジン（Whisper & Vertex AI）を活用した、本番さながらの模擬口頭試験セッション。',
+      description: 'Authentic mock oral examination sessions powered by AI voice dialogue engines (Whisper & Vertex AI).',
       icon: <Bot className="w-6 h-6 text-indigo-600" />,
       link: '/vce/mock-oral',
       status: 'available',
-      target: 'VCE受験生'
+      target: 'VCE Students'
     },
     {
       id: 'vce-writing',
-      title: '筆記試験ライティング添削',
+      title: 'Written Exam AI Writing Tutor',
       category: 'vce',
       badge: 'VCE Year 12',
       badgeColor: 'bg-indigo-100 text-indigo-800',
-      description: 'VCEライティング試験のオリジナル練習プロンプト。ルーブリック基準の採点、漢字・文法チェック。',
+      description: 'VCE writing practice prompts with rubric-aligned grading, kanji validation, and grammar checking.',
       icon: <PenTool className="w-6 h-6 text-indigo-600" />,
       link: '/vce/writing-tutor',
       status: 'available',
-      target: 'VCE受験生'
+      target: 'VCE Students'
     },
     {
       id: 'junior-curriculum',
-      title: '7〜10年生 教科書準拠セクション',
+      title: 'Years 7–10 Curriculum Section',
       category: 'junior',
-      badge: '中学・ジュニア',
+      badge: 'Junior High',
       badgeColor: 'bg-amber-100 text-amber-800',
-      description: 'ObentoやiiTomoなどの教科書進度に合わせた、語彙・文法クイズやインタラクティブなミニゲーム学習。',
+      description: 'Interactive mini-games and vocabulary/grammar quizzes aligned with textbooks like Obento and iiTomo.',
       icon: <BookOpen className="w-6 h-6 text-amber-600" />,
       link: '#',
       status: 'coming-soon',
-      target: 'Year 7 - 10'
+      target: 'Years 7 - 10'
     },
     {
       id: 'adult-learning',
-      title: '社会人向けビジネス・一般日本語',
+      title: 'Business & General Japanese',
       category: 'adult',
-      badge: '社会人向け',
+      badge: 'Adults',
       badgeColor: 'bg-sky-100 text-sky-800',
-      description: 'ビジネスシーンでの敬語表現、実用的な会話力、文化的背景を学ぶためのプレミアムコンテンツ。',
+      description: 'Premium content for mastering business keigo, practical conversation skills, and cultural context.',
       icon: <Briefcase className="w-6 h-6 text-sky-600" />,
       link: '#',
       status: 'coming-soon',
-      target: '社会人・一般'
+      target: 'Adults & General'
     }
   ];
 
@@ -131,23 +131,26 @@ export default function AppHub() {
       {/* ─── ヘッダー ─── */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="bg-indigo-600 text-white p-2 rounded-xl shadow-sm flex items-center justify-center font-bold text-lg">
-              大和
-            </div>
+          {/* ロゴ・画像リンク（クリックでホームへ） */}
+          <a href="/" className="flex items-center space-x-3 group">
+            <img 
+              src="/jptutoraiyamato.png" 
+              alt="AI Yamato Logo" 
+              className="w-10 h-10 object-contain rounded-xl shadow-sm group-hover:scale-105 transition-transform" 
+            />
             <div>
-              <span className="font-bold text-lg text-slate-900 tracking-tight">大和 AI Japanese Hub</span>
+              <span className="font-bold text-lg text-slate-900 tracking-tight">AI Yamato Japanese Hub</span>
               <span className="hidden sm:inline-block ml-2 text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full font-medium">
                 app.jptutoraiyamato.com
               </span>
             </div>
-          </div>
+          </a>
 
           <div className="flex items-center space-x-4">
             {/* クレジット残高表示 */}
             <div className="hidden sm:flex items-center space-x-1.5 bg-slate-100 px-3 py-1.5 rounded-full text-xs font-semibold text-slate-700">
               <Coins className="w-4 h-4 text-amber-500" />
-              <span>クレジット: <strong className="text-slate-900">120 pts</strong></span>
+              <span>Credits: <strong className="text-slate-900">120 pts</strong></span>
             </div>
 
             {/* ユーザープロフィール */}
@@ -157,7 +160,7 @@ export default function AppHub() {
               </div>
               <div className="hidden md:block text-left text-xs">
                 <p className="font-semibold text-slate-900">Tomonari Sasaki</p>
-                <p className="text-slate-500">教師・管理者</p>
+                <p className="text-slate-500">Teacher / Administrator</p>
               </div>
             </div>
           </div>
@@ -173,13 +176,13 @@ export default function AppHub() {
           <div className="relative z-10 max-w-2xl">
             <div className="inline-flex items-center space-x-1.5 bg-indigo-500/20 text-indigo-300 px-3 py-1 rounded-full text-xs font-medium mb-4 backdrop-blur-md">
               <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-              <span>AI日本語学習ポータルへようこそ</span>
+              <span>Welcome to AI Japanese Learning Portal</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight mb-3">
-              学びに合わせた最適なツールを選択
+              Choose the Best Tool for Your Studies
             </h1>
             <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-              VCE受験対策から、原稿用紙エディター、今後展開予定の中学生向け教科書準拠教材まで、すべての学習機能へここからアクセスできます。
+              Access all learning features from here, ranging from VCE exam preparation and the Genkoyoshi editor to upcoming junior secondary curriculum resources.
             </p>
           </div>
         </div>
@@ -194,7 +197,7 @@ export default function AppHub() {
                 : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
             }`}
           >
-            すべての機能
+            All Features
           </button>
           <button
             onClick={() => setActiveTab('vce')}
@@ -204,7 +207,7 @@ export default function AppHub() {
                 : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
             }`}
           >
-            🎓 VCE受験対策 (Year 12)
+            🎓 VCE Exam Prep (Year 12)
           </button>
           <button
             onClick={() => setActiveTab('junior')}
@@ -214,7 +217,7 @@ export default function AppHub() {
                 : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
             }`}
           >
-            📚 7〜10年生向け (準備中)
+            📚 Years 7–10 (Coming Soon)
           </button>
           <button
             onClick={() => setActiveTab('adult')}
@@ -224,7 +227,7 @@ export default function AppHub() {
                 : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
             }`}
           >
-            💼 社会人向け (予定)
+            💼 Adults & General (Planned)
           </button>
           <button
             onClick={() => setActiveTab('tools')}
@@ -234,7 +237,7 @@ export default function AppHub() {
                 : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
             }`}
           >
-            🛠️ ツール・ユーティリティ
+            🛠️ Tools & Utilities
           </button>
         </div>
 
@@ -281,19 +284,19 @@ export default function AppHub() {
                 {/* カード下部：アクションボタン */}
                 <div>
                   <div className="flex items-center justify-between pt-4 border-t border-slate-100 text-xs text-slate-500 mb-3">
-                    <span>対象: <strong className="text-slate-700">{feature.target}</strong></span>
+                    <span>Target: <strong className="text-slate-700">{feature.target}</strong></span>
                   </div>
 
                   {isComingSoon ? (
                     <div className="w-full py-2.5 px-4 bg-slate-200 text-slate-500 rounded-xl font-semibold text-xs text-center cursor-not-allowed">
-                      準備中
+                      Coming Soon
                     </div>
                   ) : (
                     <a
                       href={feature.link}
                       className="w-full py-2.5 px-4 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center space-x-2 transition-all shadow-2xs"
                     >
-                      <span>使ってみる</span>
+                      <span>Get Started</span>
                       <ChevronRight className="w-4 h-4" />
                     </a>
                   )}
@@ -309,13 +312,13 @@ export default function AppHub() {
       <footer className="bg-white border-t border-slate-200 mt-16 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 space-y-4 sm:space-y-0">
           <div className="flex items-center space-x-2">
-            <span className="font-bold text-slate-700">大和 AI Japanese Platform</span>
+            <span className="font-bold text-slate-700">AI Yamato Japanese Platform</span>
             <span>© 2026 Tomonari Sasaki. All rights reserved.</span>
           </div>
           <div className="flex space-x-6">
-            <a href="#" className="hover:text-slate-700 transition-colors">プライバシーポリシー</a>
-            <a href="#" className="hover:text-slate-700 transition-colors">利用規約</a>
-            <a href="#" className="hover:text-slate-700 transition-colors">お問い合わせ</a>
+            <a href="#" className="hover:text-slate-700 transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-slate-700 transition-colors">Terms of Service</a>
+            <a href="#" className="hover:text-slate-700 transition-colors">Contact</a>
           </div>
         </div>
       </footer>
