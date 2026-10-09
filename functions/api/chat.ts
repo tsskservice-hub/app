@@ -112,8 +112,7 @@ Provide encouraging, clear, and pedagogically sound guidance aligned with VCE Ja
     );
 
   } catch (err: any) {
-    // 💡 エラー内容を Cloudflare ログに完全に出力する
-    console.error("Unhandled Exception inonRequestPost:", err.message, err.stack);
+    console.error("Unhandled Exception in onRequestPost:", err.message, err.stack);
     return new Response(
       JSON.stringify({ 
         reply: "Sorry, I encountered an error while processing your request with AI Yamato.", 
@@ -124,7 +123,7 @@ Provide encouraging, clear, and pedagogically sound guidance aligned with VCE Ja
   }
 }
 
-// ─── アクセストークン取得ヘルパー ───
+// ─── 正しい jwt-bearer 方式のアクセストークン取得ヘルパー ───
 async function getGoogleAccessToken(serviceAccount: any): Promise<string | null> {
   try {
     const header = { alg: "RS256", typ: "JWT" };
@@ -173,10 +172,11 @@ async function getGoogleAccessToken(serviceAccount: any): Promise<string | null>
 
     const jwt = `${unsignedToken}.${base64UrlSignature}`;
 
+    // 💡 grant_type を正しく `urn:ietf:params:oauth:grant-type:jwt-bearer` に修正
     const tokenRes = await fetch(serviceAccount.token_uri, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `grant_type=authorization_assertion&assertion=${jwt}`
+      body: `grant_type=${encodeURIComponent("urn:ietf:params:oauth:grant-type:jwt-bearer")}&assertion=${encodeURIComponent(jwt)}`
     });
 
     if (!tokenRes.ok) {
