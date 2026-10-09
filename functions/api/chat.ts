@@ -9,11 +9,18 @@ export async function onRequestPost(context: any) {
     };
 
     const { message, chatHistory = [], learningPace = "steady", visualPrompt } = body;
-    const apiKey = env?.VERTEX_AI_API_KEY || env?.OPENAI_API_KEY;
+    
+    // Cloudflareの環境変数から設定値を取得
+    const projectId = env?.VERTEX_AI_PROJECT_ID;
+    const region = env?.VERTEX_AI_REGION || "us-central1";
+    const serviceAccountJson = env?.GOOGLE_SERVICE_ACCOUNT_JSON;
 
-    if (!apiKey) {
+    // 環境変数が未設定の場合は明確なエラーメッセージを返す
+    if (!projectId || !serviceAccountJson) {
       return new Response(
-        JSON.stringify({ reply: "API key is not configured on the server environment variables." }),
+        JSON.stringify({ 
+          reply: "Server configuration error: Vertex AI Project ID or Service Account JSON is missing in Cloudflare environment variables." 
+        }),
         { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }
@@ -23,6 +30,9 @@ export async function onRequestPost(context: any) {
 Your student's learning pace is set to "${learningPace}". 
 Provide encouraging, clear, and pedagogically sound guidance aligned with VCE Japanese standards.`;
 
+    // ─── ここに実際の Google Vertex AI (Gemini) API 呼び出し処理を将来的に記述します ───
+    // 現時点では、環境変数の読み込みテストとして受け答えを返すようにしています
+    
     let replyText = `[AI Yamato (${learningPace} pace)]: ご質問ありがとうございます！「${message}」についてですね。VCEの試験に向けて素晴らしい着眼点です。`;
     
     if (learningPace === "accelerated") {
