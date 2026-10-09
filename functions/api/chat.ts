@@ -13,10 +13,9 @@ export async function onRequestPost(context: any) {
     // Cloudflareの環境変数から設定値を取得
     const projectId = env?.VERTEX_AI_PROJECT_ID;
     const region = env?.VERTEX_AI_REGION || "us-central1";
-    const serviceAccountJson = env?.GOOGLE_SERVICE_ACCOUNT_JSON;
+    const serviceAccountJsonStr = env?.GOOGLE_SERVICE_ACCOUNT_JSON;
 
-    // 環境変数が未設定の場合は明確なエラーメッセージを返す
-    if (!projectId || !serviceAccountJson) {
+    if (!projectId || !serviceAccountJsonStr) {
       return new Response(
         JSON.stringify({ 
           reply: "Server configuration error: Vertex AI Project ID or Service Account JSON is missing in Cloudflare environment variables." 
@@ -25,23 +24,75 @@ export async function onRequestPost(context: any) {
       );
     }
 
-    // 💡 VCE日本語教師としてのシステムプロンプト・ペルソナの定義
-    const systemPrompt = `You are Japanese Tutor AI Yamato, an expert VCE Japanese high school educator in Victoria, Australia. 
-Your student's learning pace is set to "${learningPace}". 
-Provide encouraging, clear, and pedagogically sound guidance aligned with VCE Japanese standards.`;
-
-    // ─── ここに実際の Google Vertex AI (Gemini) API 呼び出し処理を将来的に記述します ───
-    // 現時点では、環境変数の読み込みテストとして受け答えを返すようにしています
-    
-    let replyText = `[AI Yamato (${learningPace} pace)]: ご質問ありがとうございます！「${message}」についてですね。VCEの試験に向けて素晴らしい着眼点です。`;
-    
-    if (learningPace === "accelerated") {
-      replyText += " より高度な表現や文法規則についても確認していきましょう。";
-    } else {
-      replyText += " 一つずつ丁寧に確認していきましょうね。";
+    // 1. サービスアカウントJSONのパース
+    let serviceAccount;
+    try {
+      serviceAccount = JSON.parse(serviceAccountJsonStr);
+    } catch (e) {
+      return new Response(
+        JSON.stringify({ reply: "Server configuration error: GOOGLE_SERVICE_ACCOUNT_JSON is not a valid JSON format." }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
     }
 
-    // 🎨 図解生成の要望がある場合
+    // 2. Google OAuth2 アクセストークンの取得 (JWT生成 & Token Endpoint交換)
+    const accessToken = await getGoogleAccessToken(serviceAccount);
+    if (!accessToken) {
+      return new Response(
+        JSON.stringify({ reply: "Failed to authenticate with Google Vertex AI using the provided service account." }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // 3. VCE日本語教師としてのシステムプロンプト・ペルソナの構築
+    const systemInstruction = {
+      role: "system",
+      parts: [{
+        text: `You are Japanese Tutor AI Yamato, an expert VCE Japanese high school educator in Victoria, Australia. 
+Your student's learning pace is set to "${learningPace}". 
+Provide encouraging, clear, and pedagogically sound guidance aligned with VCE Japanese standards.`
+      }]
+    };
+
+    // 過去のチャット履歴と今回のメッセージを Vertex AI のフォーマットに変換
+    const contents = chatHistory.map(h => ({
+      role: h.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: h.content }]
+    }));
+    contents.push({
+      role: 'user',
+      parts: [{ text: message }]
+    });
+
+    // 4. Vertex AI (Gemini 1.5 Flash または Pro) エンドポイント呼び出し
+    const modelId = "gemini-1.5-flash"; // 必要に応じて gemini-1.5-pro に変更可能
+    const vertexUrl = `https://${region}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${region}/publishers/google/models/${modelId}:generateContent`;
+
+    const vertexResponse = await fetch(vertexUrl, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        systemInstruction: systemInstruction,
+        contents: contents,
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 1024,
+        }
+      })
+    });
+
+    if (!vertexResponse.ok) {
+      const errorText = await vertexResponse.text();
+      throw new Error(`Vertex AI API error (${vertexResponse.status}): ${errorText}`);
+    }
+
+    const vertexData = await vertexResponse.json() as any;
+    const aiReply = vertexData?.candidates?.[0]?.content?.parts?.[0]?.text || "申し訳ありません。うまく回答を生成できませんでした。";
+
+    // 🎨 図解生成の要望がある場合（必要に応じてプレースホルダーや画像生成モデル連携）
     let imageUrl: string | undefined = undefined;
     if (visualPrompt) {
       imageUrl = "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80";
@@ -49,7 +100,7 @@ Provide encouraging, clear, and pedagogically sound guidance aligned with VCE Ja
 
     return new Response(
       JSON.stringify({
-        reply: replyText,
+        reply: aiReply,
         imageUrl: imageUrl,
       }),
       {
@@ -66,5 +117,72 @@ Provide encouraging, clear, and pedagogically sound guidance aligned with VCE Ja
       }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
+  }
+}
+
+// ─── Cloudflare Workers 環境で動く簡易JWT署名＆アクセストークン取得ヘルパー ───
+async function getGoogleAccessToken(serviceAccount: any): Promise<string | null> {
+  try {
+    const header = { alg: "RS256", typ: "JWT" };
+    const now = Math.floor(Date.now() / 1000);
+    const exp = now + 3600;
+
+    const payload = {
+      iss: serviceAccount.client_email,
+      scope: "https://www.googleapis.com/auth/cloud-platform",
+      aud: serviceAccount.token_uri,
+      iat: now,
+      exp: exp,
+    };
+
+    const base64UrlEncode = (str: string) => 
+      btoa(unescape(encodeURIComponent(str))).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
+
+    const unsignedToken = `${base64UrlEncode(JSON.stringify(header))}.${base64UrlEncode(JSON.stringify(payload))}`;
+
+    // PEMキーのパースと署名
+    const pemHeader = "-----BEGIN PRIVATE KEY-----";
+    const pemFooter = "-----END PRIVATE KEY-----";
+    let pemContents = serviceAccount.private_key;
+    if (pemContents.includes(pemHeader)) {
+      pemContents = pemContents.replace(pemHeader, "").replace(pemFooter, "");
+    }
+    pemContents = pemContents.replace(/\s/g, "");
+
+    const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
+
+    const key = await crypto.subtle.importKey(
+      "pkcs8",
+      binaryDer.buffer,
+      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+      false,
+      ["sign"]
+    );
+
+    const signature = await crypto.subtle.sign(
+      "RSASSA-PKCS1-v1_5",
+      key,
+      new TextEncoder().encode(unsignedToken)
+    );
+
+    const base64UrlSignature = btoa(String.fromCharCode(...new Uint8Array(signature)))
+      .replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
+
+    const jwt = `${unsignedToken}.${base64UrlSignature}`;
+
+    // Google OAuth2 Token Endpointへリクエスト
+    const tokenRes = await fetch(serviceAccount.token_uri, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `grant_type=authorization_assertion&assertion=${jwt}`
+    });
+
+    if (!tokenRes.ok) return null;
+
+    const tokenData = await tokenRes.json() as any;
+    return tokenData.access_token || null;
+  } catch (e) {
+    console.error("Token generation error:", e);
+    return null;
   }
 }
