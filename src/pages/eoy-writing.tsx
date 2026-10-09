@@ -188,7 +188,6 @@ export default function Dashboard() {
   const [activeTextType, setActiveTextType] = useState<string>("all");
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [userEmail] = useState<string>("tomonari.sasaki@example.com");
   const [userNickname, setUserNickname] = useState<string>("Tomonari");
   const [isSavingNickname, setIsSavingNickname] = useState<boolean>(false);
   const [selectedQuestion, setSelectedQuestion] = useState<any>(null);
@@ -302,8 +301,7 @@ export default function Dashboard() {
           pace: tutorLevel,          
           visualPrompt,
           assignedQuestion: assignedQuestionText,
-          userNickname: userNickname || userEmail,
-          userEmail: userEmail,
+          userNickname: userNickname || "Student",
           imageBase64: imageBase64
         }),
       });
@@ -370,11 +368,6 @@ export default function Dashboard() {
       
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white px-5 py-4 rounded-xl mb-6 border border-slate-200 shadow-sm gap-4">
         <div className="flex flex-col gap-2 w-full sm:w-auto">
-          <span className="text-base text-slate-600 font-bold">
-            👤 Logged in as:{" "}
-            <span className="text-slate-900 font-medium">{userEmail}</span>
-          </span>
-
           <div className="flex items-center gap-2 flex-wrap mt-1">
             <label htmlFor="nickname" className="text-sm font-bold text-indigo-900">
               🏷️ AI Preferred Name:
@@ -433,9 +426,8 @@ export default function Dashboard() {
           <div className="flex items-center gap-2 text-indigo-900 font-bold text-lg flex-wrap">
             <span>🤖</span> AI Yamato is ready for:{" "}
             <span className="font-bold text-indigo-800 underline">
-              {userNickname || userEmail}
-            </span>{" "}
-            <span className="font-mono text-xs text-indigo-600">({userEmail})</span>
+              {userNickname}
+            </span>
           </div>
 
           <div id="active-ai-tutor-banner" className="px-4 py-3 bg-white/80 border border-indigo-200 rounded-lg text-indigo-900 text-base font-bold flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-xs scroll-mt-6 gap-3">
