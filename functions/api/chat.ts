@@ -16,6 +16,7 @@ export async function onRequestPost(context: any) {
     const serviceAccountJsonStr = env?.GOOGLE_SERVICE_ACCOUNT_JSON;
 
     if (!projectId || !serviceAccountJsonStr) {
+      console.error("Missing config: projectId or serviceAccountJsonStr");
       return new Response(
         JSON.stringify({ 
           reply: "Server configuration error: Vertex AI Project ID or Service Account JSON is missing in Cloudflare environment variables." 
@@ -28,16 +29,18 @@ export async function onRequestPost(context: any) {
     let serviceAccount;
     try {
       serviceAccount = JSON.parse(serviceAccountJsonStr);
-    } catch (e) {
+    } catch (e: any) {
+      console.error("JSON parse error for GOOGLE_SERVICE_ACCOUNT_JSON:", e.message);
       return new Response(
         JSON.stringify({ reply: "Server configuration error: GOOGLE_SERVICE_ACCOUNT_JSON is not a valid JSON format." }),
         { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    // 2. Google OAuth2 アクセストークンの取得 (JWT生成 & Token Endpoint交換)
+    // 2. Google OAuth2 アクセストークンの取得
     const accessToken = await getGoogleAccessToken(serviceAccount);
     if (!accessToken) {
+      console.error("Failed to obtain Google access token via JWT.");
       return new Response(
         JSON.stringify({ reply: "Failed to authenticate with Google Vertex AI using the provided service account." }),
         { status: 500, headers: { "Content-Type": "application/json" } }
@@ -54,7 +57,6 @@ Provide encouraging, clear, and pedagogically sound guidance aligned with VCE Ja
       }]
     };
 
-    // 過去のチャット履歴と今回のメッセージを Vertex AI のフォーマットに変換
     const contents = chatHistory.map(h => ({
       role: h.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: h.content }]
@@ -64,8 +66,8 @@ Provide encouraging, clear, and pedagogically sound guidance aligned with VCE Ja
       parts: [{ text: message }]
     });
 
-    // 4. Vertex AI (Gemini 1.5 Flash または Pro) エンドポイント呼び出し
-    const modelId = "gemini-1.5-flash"; // 必要に応じて gemini-1.5-pro に変更可能
+    // 4. Vertex AI エンドポイント呼び出し
+    const modelId = "gemini-1.5-flash";
     const vertexUrl = `https://${region}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${region}/publishers/google/models/${modelId}:generateContent`;
 
     const vertexResponse = await fetch(vertexUrl, {
@@ -86,13 +88,13 @@ Provide encouraging, clear, and pedagogically sound guidance aligned with VCE Ja
 
     if (!vertexResponse.ok) {
       const errorText = await vertexResponse.text();
+      console.error(`Vertex AI API error (${vertexResponse.status}):`, errorText);
       throw new Error(`Vertex AI API error (${vertexResponse.status}): ${errorText}`);
     }
 
     const vertexData = await vertexResponse.json() as any;
     const aiReply = vertexData?.candidates?.[0]?.content?.parts?.[0]?.text || "申し訳ありません。うまく回答を生成できませんでした。";
 
-    // 🎨 図解生成の要望がある場合（必要に応じてプレースホルダーや画像生成モデル連携）
     let imageUrl: string | undefined = undefined;
     if (visualPrompt) {
       imageUrl = "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80";
@@ -110,6 +112,8 @@ Provide encouraging, clear, and pedagogically sound guidance aligned with VCE Ja
     );
 
   } catch (err: any) {
+    // 💡 エラー内容を Cloudflare ログに完全に出力する
+    console.error("Unhandled Exception inonRequestPost:", err.message, err.stack);
     return new Response(
       JSON.stringify({ 
         reply: "Sorry, I encountered an error while processing your request with AI Yamato.", 
@@ -120,7 +124,7 @@ Provide encouraging, clear, and pedagogically sound guidance aligned with VCE Ja
   }
 }
 
-// ─── Cloudflare Workers 環境で動く簡易JWT署名＆アクセストークン取得ヘルパー ───
+// ─── アクセストークン取得ヘルパー ───
 async function getGoogleAccessToken(serviceAccount: any): Promise<string | null> {
   try {
     const header = { alg: "RS256", typ: "JWT" };
@@ -140,7 +144,6 @@ async function getGoogleAccessToken(serviceAccount: any): Promise<string | null>
 
     const unsignedToken = `${base64UrlEncode(JSON.stringify(header))}.${base64UrlEncode(JSON.stringify(payload))}`;
 
-    // PEMキーのパースと署名
     const pemHeader = "-----BEGIN PRIVATE KEY-----";
     const pemFooter = "-----END PRIVATE KEY-----";
     let pemContents = serviceAccount.private_key;
@@ -170,19 +173,22 @@ async function getGoogleAccessToken(serviceAccount: any): Promise<string | null>
 
     const jwt = `${unsignedToken}.${base64UrlSignature}`;
 
-    // Google OAuth2 Token Endpointへリクエスト
     const tokenRes = await fetch(serviceAccount.token_uri, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: `grant_type=authorization_assertion&assertion=${jwt}`
     });
 
-    if (!tokenRes.ok) return null;
+    if (!tokenRes.ok) {
+      const tokenErrText = await tokenRes.text();
+      console.error("Google Token Endpoint error:", tokenErrText);
+      return null;
+    }
 
     const tokenData = await tokenRes.json() as any;
     return tokenData.access_token || null;
-  } catch (e) {
-    console.error("Token generation error:", e);
+  } catch (e: any) {
+    console.error("Token generation internal error:", e.message);
     return null;
   }
 }
