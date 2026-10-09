@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Header } from "../components/header"; // ⬅️ ① 共通ヘッダーをインポート (パスは実際の階層に合わせて調整してください)
 
 type Item =
   | { type: "num"; value: string }
@@ -281,123 +282,6 @@ export default function GenkoyoshiEditor() {
           position: relative;
         }
 
-        .genko-header-wrapper {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 20px;
-          margin-bottom: 20px;
-          flex-wrap: wrap;
-        }
-
-        .genko-header-title-area {
-          flex: 1;
-          min-width: 320px;
-          display: flex;
-          align-items: center;
-          gap: 15px;
-        }
-
-        .genko-header-logo-link {
-          display: inline-block;
-          transition: transform 0.2s ease, opacity 0.2s ease;
-          text-decoration: none;
-        }
-
-        .genko-header-logo-link:hover {
-          transform: scale(1.05);
-          opacity: 0.9;
-        }
-
-        .genko-header-logo {
-          width: 52px;
-          height: 52px;
-          object-fit: contain;
-          flex-shrink: 0;
-          display: block;
-        }
-
-        .genko-header-text-group h1 {
-          font-size: 1.4rem;
-          margin: 0 0 4px 0;
-          color: #0f172a;
-        }
-
-        .genko-subtitle {
-          font-size: 0.85rem;
-          color: #64748b;
-          margin: 0;
-        }
-
-        .genko-header-banner {
-          flex: 1;
-          max-width: 540px;
-          min-width: 300px;
-          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-          border-radius: 12px;
-          padding: 12px 18px;
-          color: #ffffff;
-          box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 12px;
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .genko-header-banner:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
-        }
-
-        .genko-banner-content {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .genko-banner-badge {
-          display: inline-block;
-          background-color: rgba(255, 255, 255, 0.2);
-          color: #fef08a;
-          font-size: 0.7rem;
-          font-weight: bold;
-          padding: 2px 8px;
-          border-radius: 12px;
-          margin-bottom: 4px;
-          width: fit-content;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        .genko-banner-text {
-          font-size: 0.85rem;
-          font-weight: bold;
-          line-height: 1.3;
-          margin: 0;
-        }
-
-        .genko-banner-subtext {
-          font-size: 0.75rem;
-          opacity: 0.9;
-          margin-top: 2px;
-        }
-
-        .genko-banner-button {
-          background-color: #ffffff;
-          color: #4f46e5;
-          font-weight: bold;
-          font-size: 0.8rem;
-          padding: 8px 14px;
-          border-radius: 8px;
-          text-decoration: none;
-          white-space: nowrap;
-          transition: background-color 0.2s ease;
-        }
-
-        .genko-banner-button:hover {
-          background-color: #f3f4f6;
-        }
-
         .genko-container {
           display: flex;
           gap: 20px;
@@ -605,7 +489,7 @@ export default function GenkoyoshiEditor() {
             background: none !important;
             padding: 0 !important;
           }
-          .genko-header-wrapper,
+          header,
           .genko-editor-pane,
           .genko-btn-container,
           .genko-cta-box,
@@ -625,36 +509,10 @@ export default function GenkoyoshiEditor() {
         }
       `}</style>
 
-      {/* 🌟 ヘッダー */}
-      <div className="genko-header-wrapper">
-        <div className="genko-header-title-area">
-          <a href="/" className="genko-header-logo-link" title="Home">
-            <div className="genko-header-logo bg-blue-600 rounded-xl flex items-center justify-center text-white text-xl font-bold shadow-md">
-              📝
-            </div>
-          </a>
-          <div className="genko-header-text-group">
-            <h1>Japanese Genkoyoshi Grid Editor (Horizontal)</h1>
-            <div className="genko-subtitle">
-              Type your writing in the text box below. Pressing Enter automatically creates a new indent paragraph. You can print or save as PDF.
-            </div>
-          </div>
-        </div>
+      {/* ⬅️ ② 共通ヘッダーコンポーネントを配置 */}
+      <Header />
 
-        {/* 📢 宣伝バナー */}
-        <div className="genko-header-banner">
-          <div className="genko-banner-content">
-            <span className="genko-banner-badge">Writing AI Tutor</span>
-            <div className="genko-banner-text">Ready for your Writing Exam?</div>
-            <div className="genko-banner-subtext">AI Tutor is here to support you!</div>
-          </div>
-          <a href="#vce-app" className="genko-banner-button">
-            Learn More &rarr;
-          </a>
-        </div>
-      </div>
-
-      <div className="genko-container">
+      <div className="genko-container mt-6">
         <div className="genko-editor-pane">
           <div className="genko-control-group">
             <label htmlFor="format">用紙フォーマット</label>
@@ -821,7 +679,7 @@ export default function GenkoyoshiEditor() {
                     key={level}
                     type="button"
                     onClick={() => setTutorLevel(level)}
-                    className={`px-2.5 py-1 rounded-md text-[10px] font-bold capitalize transition ${
+                    className={`px-2.5 py-1 rounded-md text-[10px] font-bold capitalize transition cursor-pointer ${
                       tutorLevel === level
                         ? "bg-blue-600 text-white shadow-xs"
                         : "text-slate-600 hover:text-blue-700"

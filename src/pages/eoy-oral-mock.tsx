@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import type { MetaFunction } from "react-router";
+import { Header } from "../components/header"; // ⬅️ ① 共通ヘッダーをインポート (パスは実際の階層に合わせて調整してください)
 
 export const meta: MetaFunction = () => {
   return [
@@ -243,7 +244,6 @@ export default function MockOralMode() {
   const fetchCustomQuestions = async () => {
     setIsLoadingCustom(true);
     try {
-      // ローカルフォールバックとしてダミーのカスタム質問を設定
       const fallbackCustom: ExamQuestion[] = [
         { id: "custom-q-1", category: "Custom Topics", text: "あなたの趣味について詳しく教えてください。", text_original: "あなたの趣味について詳しく教えてください。" }
       ];
@@ -912,7 +912,8 @@ export default function MockOralMode() {
   };
 
   return (
-    <div className="bg-slate-50 min-h-screen text-slate-800 font-sans pb-16 relative">
+    // ⬅️ ② 全体を囲む親要素を `bg-slate-50 min-h-screen text-slate-800 font-sans relative` に統一
+    <div className="bg-slate-50 min-h-screen text-slate-800 font-sans relative pb-16">
       <style>{`
         @keyframes avatar-pulse {
           0%, 100% { box-shadow: 0 0 15px rgba(37, 99, 235, 0.3); }
@@ -923,18 +924,10 @@ export default function MockOralMode() {
         }
       `}</style>
 
-      <header className="bg-white/95 border-b border-blue-200 sticky top-0 z-40 shadow-xs">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">🎓</span>
-            <h1 className="font-bold text-lg text-slate-900">VCE Japanese - AI Mock Oral Mode</h1>
-          </div>
-          <a href="/dashboard" className="text-xs font-bold text-blue-700 hover:underline">
-            ← Return to Dashboard
-          </a>
-        </div>
-      </header>
+      {/* ⬅️ ③ 共通ヘッダーコンポーネントを一番上に配置 */}
+      <Header />
 
+      {/* ⬅️ ④ メインコンテンツ */}
       <main className="max-w-3xl mx-auto px-4 py-8 space-y-8">
         {examPhase === "config" && (
           <div className="bg-white border-2 border-blue-300 rounded-2xl p-6 shadow-md space-y-6">

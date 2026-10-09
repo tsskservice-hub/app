@@ -3,6 +3,7 @@ import { type MetaFunction } from "react-router";
 
 // 🚀 モノレポ依存を排除し、app内のローカルデータファイルへ直接インポートする形に変更
 import questionDataRaw from "../data/oral-exam-questions.json";
+import { Header } from "../components/header"; // ⬅️ ① 共通ヘッダーをインポート (パスは実際の階層に合わせて調整してください)
 
 export const meta: MetaFunction = () => {
   return [
@@ -245,32 +246,8 @@ export default function OralExamQuestions() {
 
   return (
     <div className="bg-amber-50 min-h-screen text-slate-800 flex flex-col justify-between font-sans relative">
-      {/* Header / Nav */}
-      <header className="bg-white/90 backdrop-blur-md border-b border-amber-200 sticky top-0 z-40 shadow-xs">
-        <div className="max-w-5xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <a
-            href="/"
-            className="flex items-center gap-3 no-underline group cursor-pointer"
-          >
-            <img
-              src="/jptutoraiyamato.png"
-              alt="JPTutor AI Yamato Logo"
-              className="h-10 w-auto transition-transform group-hover:scale-105"
-            />
-            <div>
-              <h1 className="font-bold text-xl text-slate-900 tracking-tight group-hover:text-emerald-700 transition-colors">Japanese Tutor AI Yamato</h1>
-              <p className="text-xs text-amber-700 font-medium">VCE Japanese EOY Oral Exam Free Audio Resources</p>
-            </div>
-          </a>
-              
-          <a
-            href="/#vce-app"
-            className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-5 py-2.5 rounded-full shadow-md transition transform hover:-translate-y-0.5 flex items-center gap-2"
-          >
-            <span>🚀 Oral Exam AI Tutor App</span>
-          </a>
-        </div>
-      </header>
+      {/* ⬅️ ② 共通ヘッダーコンポーネントを配置 */}
+      <Header />
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-10 flex-grow w-full">

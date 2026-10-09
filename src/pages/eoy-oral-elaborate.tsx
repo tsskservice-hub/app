@@ -1,6 +1,7 @@
 import { useState, useRef, useMemo, useEffect } from "react";
 import type { MetaFunction } from "react-router";
 import oralExamQuestionsData from "../data/oral-exam-questions.json";
+import { Header } from "../components/header"; // ⬅️ ① 共通ヘッダーをインポート (パスは実際の階層に合わせて調整してください)
 
 export const meta: MetaFunction = () => {
   return [
@@ -570,14 +571,8 @@ export default function ElaborateDrillMode() {
         }
       `}</style>
 
-      <header className="bg-white/95 border-b border-purple-200 sticky top-0 z-40 shadow-xs">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="font-bold text-xl text-purple-900">🚀 Elaborate Drill Mode - 3-Level Support</h1>
-          <a href="/dashboard" className="text-sm font-bold text-purple-700 hover:underline">
-            ← Back to Dashboard
-          </a>
-        </div>
-      </header>
+      {/* ⬅️ ② 共通ヘッダーコンポーネントを配置 */}
+      <Header />
 
       <main className="max-w-3xl mx-auto px-4 py-8 space-y-8">
         <div className="bg-white border-2 border-purple-300 rounded-2xl p-6 shadow-md">
@@ -751,7 +746,7 @@ export default function ElaborateDrillMode() {
                       if (currentQ) playTTS(currentQ.text_original || currentQ.text);
                     }}
                     disabled={isLoading}
-                    className="flex items-center gap-1.5 bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-3 rounded-full shadow-md transition text-sm"
+                    className="flex items-center gap-1.5 bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-3 rounded-full shadow-md transition text-sm cursor-pointer"
                   >
                     <span>🔊</span> Repeat Q
                   </button>
@@ -850,7 +845,7 @@ export default function ElaborateDrillMode() {
                       key={level}
                       type="button"
                       onClick={() => setTutorLevel(level)}
-                      className={`px-2.5 py-1 rounded-md text-[10px] font-bold capitalize transition ${
+                      className={`px-2.5 py-1 rounded-md text-[10px] font-bold capitalize transition cursor-pointer ${
                         tutorLevel === level
                           ? "bg-purple-700 text-white shadow-xs"
                           : "text-slate-600 hover:text-purple-800"
@@ -877,7 +872,7 @@ export default function ElaborateDrillMode() {
                       key={size.key}
                       type="button"
                       onClick={() => setChatFontSize(size.key)}
-                      className={`px-2 py-1 rounded-md text-[10px] font-bold transition ${
+                      className={`px-2 py-1 rounded-md text-[10px] font-bold transition cursor-pointer ${
                         chatFontSize === size.key
                           ? "bg-purple-700 text-white shadow-xs"
                           : "text-slate-600 hover:text-purple-800"

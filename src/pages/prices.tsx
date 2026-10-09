@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import type { MetaFunction } from "react-router";
 import { Link } from "react-router";
 import { Sparkles, ArrowRight, ShieldCheck, Sun, Moon, Check, ShoppingBag, GraduationCap, Mic } from "lucide-react";
+import { Header } from "../components/header"; // ⬅️ ① 共通ヘッダーをインポート (パスは実際の階層に合わせて調整してください)
 
 export const meta: MetaFunction = () => {
   return [
@@ -40,44 +41,8 @@ export default function Prices() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300">
       
-      {/* ヘッダー */}
-      <header className="border-b border-slate-200 dark:border-slate-800/80 bg-white/80 dark:bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl overflow-hidden shadow-md shadow-indigo-500/20 flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-              <img 
-                src="/jptutoraiyamato.png" 
-                alt="JP Tutor AI Yamato Logo" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-600 dark:from-white dark:via-slate-200 dark:to-indigo-300 bg-clip-text text-transparent">
-              JP Tutor AI Yamato
-            </span>
-          </Link>
-
-          <div className="flex items-center space-x-4">
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all bg-slate-200 hover:bg-slate-300 text-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-800 shadow-sm cursor-pointer select-none"
-              aria-label="Toggle Theme"
-            >
-              {isDark ? (
-                <span className="inline-flex items-center gap-1.5">
-                  <Sun className="w-4 h-4 text-amber-400" />
-                  <span className="hidden sm:inline">Light</span>
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5">
-                  <Moon className="w-4 h-4 text-indigo-600" />
-                  <span className="hidden sm:inline">Dark</span>
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* ⬅️ ② 共通ヘッダーコンポーネントを配置 */}
+      <Header />
 
       <main className="flex-grow">
         

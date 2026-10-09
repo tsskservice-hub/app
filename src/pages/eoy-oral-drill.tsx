@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import type { MetaFunction } from "react-router";
 import { Link } from "react-router";
 import oralExamQuestionsData from "../data/oral-exam-questions.json";
+import { Header } from "../components/header"; // ⬅️ ① 共通ヘッダーをインポート (パスは実際の階層に合わせて調整してください)
 
 export const meta: MetaFunction = () => {
   return [
@@ -25,18 +26,6 @@ type ChatMessage = {
   content: string;
   imageUrl?: string;
 };
-
-// 🧩 簡易的なBackButtonコンポーネント
-function BackButton() {
-  return (
-    <Link
-      to="/"
-      className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition shadow-2xs no-underline"
-    >
-      ← Back to Dashboard
-    </Link>
-  );
-}
 
 const questionsData = oralExamQuestionsData;
 
@@ -423,7 +412,7 @@ export default function UnifiedDrillMode() {
     setAnswers((prev) => ({ ...prev, [id]: text }));
   };
 
-  const handleAnswerBlur = (id: string, text: string, isCustom?: boolean) => {
+  const handleAnswerBlur = (_id: string, _text: string, _isCustom?: boolean) => {
     // ローカル状態のみの更新になるため追加のDB処理は不要
   };
 
@@ -481,7 +470,7 @@ export default function UnifiedDrillMode() {
           setCustomQuestionsRaw((prev) => [...prev, ...itemsToInsert]);
           alert(`Successfully imported ${itemsToInsert.length} questions!`);
         }
-      } catch (err) {
+      } catch (_err) {
         alert("Failed to import CSV.");
       } finally {
         e.target.value = "";
@@ -547,7 +536,7 @@ export default function UnifiedDrillMode() {
 
       mediaRecorder.start();
       setIsRecording(true);
-    } catch (err) {
+    } catch (_err) {
       alert("Microphone access is denied or unavailable.");
     }
   };
@@ -602,7 +591,7 @@ export default function UnifiedDrillMode() {
       if (!res.ok) throw new Error();
       const data = await res.json() as any;
       setInputMessage(data.userText || "");
-    } catch (err) {
+    } catch (_err) {
       alert("Transcription error.");
     } finally {
       setIsLoading(false);
@@ -683,7 +672,7 @@ export default function UnifiedDrillMode() {
       }
 
       setChatMessages([...newMessages, { role: "assistant", content: fullFeedback, isHtml: true }]);
-    } catch (err) {
+    } catch (_err) {
       setChatMessages([...newMessages, { role: "assistant", content: "An error occurred.", isHtml: false }]);
     } finally {
       setIsLoading(false);
@@ -738,12 +727,8 @@ export default function UnifiedDrillMode() {
         }
       `}</style>
 
-      <header className="bg-white/95 border-b border-amber-200 sticky top-0 z-40 shadow-xs">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="font-bold text-xl text-slate-900">📝 Unified VCE & Custom QA Drill</h1>
-          <BackButton />
-        </div>
-      </header>
+      {/* ⬅️ ② 共通ヘッダーコンポーネントを配置 */}
+      <Header />
 
       <main className="max-w-3xl mx-auto px-4 py-8 space-y-8">
         <div className="bg-white border-2 border-amber-300 rounded-2xl p-6 shadow-md">
@@ -922,7 +907,7 @@ export default function UnifiedDrillMode() {
             <div className="pt-4 border-t space-y-3">
               <div className="flex justify-between items-center">
                 <h4 className="text-xs font-bold text-slate-900">📂 Import from CSV</h4>
-                <button type="button" onClick={downloadCsvTemplate} className="bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-3 py-1 rounded text-xs">
+                <button type="button" onClick={downloadCsvTemplate} className="bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-3 py-1 rounded text-xs cursor-pointer">
                   📥 Template
                 </button>
               </div>
@@ -971,7 +956,7 @@ export default function UnifiedDrillMode() {
                     <div className="flex justify-between items-center">
                       <label className="block text-xs font-semibold text-slate-600">Your Answer</label>
                       {item.isCustom && (
-                        <button type="button" onClick={() => handleDeleteCustom(item.id)} className="text-rose-600 hover:text-rose-800 text-xs font-bold">
+                        <button type="button" onClick={() => handleDeleteCustom(item.id)} className="text-rose-600 hover:text-rose-800 text-xs font-bold cursor-pointer">
                           Delete Question
                         </button>
                       )}
@@ -1058,7 +1043,7 @@ export default function UnifiedDrillMode() {
                       if (currentQ) playTTS(currentQ.questionOriginal);
                     }}
                     disabled={isLoading}
-                    className="flex items-center gap-1.5 bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-3 rounded-full shadow-md transition text-sm"
+                    className="flex items-center gap-1.5 bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-3 rounded-full shadow-md transition text-sm cursor-pointer"
                   >
                     <span>🔊</span> Repeat Q
                   </button>
@@ -1157,7 +1142,7 @@ export default function UnifiedDrillMode() {
                       key={level}
                       type="button"
                       onClick={() => setTutorLevel(level)}
-                      className={`px-2.5 py-1 rounded-md text-[10px] font-bold capitalize transition ${
+                      className={`px-2.5 py-1 rounded-md text-[10px] font-bold capitalize transition cursor-pointer ${
                         tutorLevel === level
                           ? "bg-emerald-600 text-white shadow-xs"
                           : "text-slate-600 hover:text-emerald-700"
@@ -1184,7 +1169,7 @@ export default function UnifiedDrillMode() {
                       key={size.key}
                       type="button"
                       onClick={() => setChatFontSize(size.key)}
-                      className={`px-2 py-1 rounded-md text-[10px] font-bold transition ${
+                      className={`px-2 py-1 rounded-md text-[10px] font-bold transition cursor-pointer ${
                         chatFontSize === size.key
                           ? "bg-emerald-600 text-white shadow-xs"
                           : "text-slate-600 hover:text-emerald-700"

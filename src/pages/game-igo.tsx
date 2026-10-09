@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Header } from "../components/header"; // ⬅️ ① 共通ヘッダーをインポート (パスは実際の階層に合わせて調整してください)
 
 // ミニ5路囲碁のゲームコンポーネントを単独アプリ用に1ファイルに統合
 function IgoBoard() {
@@ -74,7 +75,7 @@ function IgoBoard() {
 
       <button
         onClick={resetGame}
-        className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded font-medium transition-colors"
+        className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded font-medium transition-colors cursor-pointer"
       >
         リセット
       </button>
@@ -84,13 +85,15 @@ function IgoBoard() {
 
 export default function IgoRoute() {
   return (
-    <div className="min-h-screen bg-[#f4f1ea] py-8">
-      <div className="max-w-xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <div className="mb-4">
-          <a href="/" className="text-blue-600 hover:underline">&larr; トップに戻る</a>
+    <div className="min-h-screen bg-[#f4f1ea] pb-16">
+      {/* ⬅️ ② 共通ヘッダーコンポーネントを配置 */}
+      <Header />
+
+      <main className="max-w-xl mx-auto px-4 pt-8">
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <IgoBoard />
         </div>
-        <IgoBoard />
-      </div>
+      </main>
     </div>
   );
 }
