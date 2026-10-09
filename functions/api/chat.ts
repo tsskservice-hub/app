@@ -1,3 +1,10 @@
+/**
+ * @file chat.ts
+ * @description Cloudflare Pages Functions用チャットエンドポイント（時間・天気コンテキスト統合版）
+ */
+
+import { buildSystemInstructionWithTimeAndWeather } from '../../src/ai/time-utils.ts';
+
 export async function onRequestPost(context: any) {
   try {
     const { request, env } = context;
@@ -47,14 +54,21 @@ export async function onRequestPost(context: any) {
       );
     }
 
-    // 3. VCE日本語教師としてのシステムプロンプト・ペルソナの構築
+    // 3. VCE日本語教師としてのベースプロンプトの作成
+    const baseSystemPrompt = `You are Japanese Tutor AI Yamato, an expert VCE Japanese high school educator in Victoria, Australia. 
+Your student's learning pace is set to "${learningPace}". 
+Provide encouraging, clear, and pedagogically sound guidance aligned with VCE Japanese standards.`;
+
+    // 💡 4. 時間と天気のコンテキストを組み込んだシステムプロンプトを非同期で生成
+    const enhancedSystemPromptText = await buildSystemInstructionWithTimeAndWeather(
+      baseSystemPrompt,
+      undefined, // デバッグ用の日時上書きが必要な場合はここに文字列を指定
+      'melbourne' // 基準とする都市（必要に応じて変更可能）
+    );
+
     const systemInstruction = {
       role: "system",
-      parts: [{
-        text: `You are Japanese Tutor AI Yamato, an expert VCE Japanese high school educator in Victoria, Australia. 
-Your student's learning pace is set to "${learningPace}". 
-Provide encouraging, clear, and pedagogically sound guidance aligned with VCE Japanese standards.`
-      }]
+      parts: [{ text: enhancedSystemPromptText }]
     };
 
     const contents = chatHistory.map(h => ({
@@ -66,7 +80,7 @@ Provide encouraging, clear, and pedagogically sound guidance aligned with VCE Ja
       parts: [{ text: message }]
     });
 
-    // 4. Vertex AI エンドポイント呼び出し
+    // 5. Vertex AI エンドポイント呼び出し
     const modelId = "gemini-2.5-flash";
     const vertexUrl = `https://${region}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${region}/publishers/google/models/${modelId}:generateContent`;
 
@@ -172,7 +186,6 @@ async function getGoogleAccessToken(serviceAccount: any): Promise<string | null>
 
     const jwt = `${unsignedToken}.${base64UrlSignature}`;
 
-    // 💡 grant_type を正しく `urn:ietf:params:oauth:grant-type:jwt-bearer` に修正
     const tokenRes = await fetch(serviceAccount.token_uri, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
